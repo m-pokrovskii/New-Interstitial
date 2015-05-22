@@ -186,12 +186,14 @@ var appnextAPP = (function(){
 						'data-jsonid': key1
 					});
 				};
-
-				document.querySelector('.js-modal_main_img_itm').setAttributes({
-					src:    val1.urlImg,
-					onload: document.querySelector('.js-modal_inner_cust').style.display = "",
-					alt:    val1.title
+				document.querySelectorAll('.js-modal_main_img_itm').forEach(function(element, index){
+					element.setAttributes({
+						src:    val1.urlImg,
+						onload: document.querySelector('.js-modal_inner_cust').style.display = "",
+						alt:    val1.title
+					});
 				});
+
 				document.querySelector('.js-modal_itm_info_title').setAttributes({
 					html: val1.title.substring(0, 25)
 				});
