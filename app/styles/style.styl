@@ -17,6 +17,7 @@ html
 	line-height 1.8em !important
 	font-family Arial !important
 	overflow hidden
+	height: 100%;
 	+above("s", orientation: landscape)
 		font-size 62.5% !important
 		line-height 1.8em !important
@@ -49,16 +50,19 @@ html
 		line-height 1.8em !important
 
 body
-	font-size 1em !important
-	overflow hidden
+	font-size: 1em !important;
+	overflow: hidden;
+	padding: 0; margin: 0;
 
-body, .app
-	position fixed
-	z-index 2147483647
-	width 100%; height 100%
+body, .app {
+	position: fixed;
+	z-index: 2147483647;
+	width: 100%; height:100%;
 	top 0; left 0; right 0; bottom 0;	
-	background #fff
-	color #000 !important 
+	color: #000 !important;
+	overflow: hidden;
+	background: #FFF;	
+	}
 
 		
 .app * 
@@ -250,6 +254,11 @@ body, .app
 	width: 100%; height: 100%;
 	}
 	
+.swiper-wrapper {
+	height: 100%;
+	}
+
 .swiper-slide {
 	width: 85% !important;
+	height: 100%;
 	}

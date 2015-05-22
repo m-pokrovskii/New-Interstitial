@@ -1,263 +1,122 @@
-'use strict';
-Element.prototype.setAttributes = function (attrs) {
-    for (var idx in attrs) {
-        if ((idx === 'styles' || idx === 'style') && typeof attrs[idx] === 'object') {
-            for (var prop in attrs[idx]){this.style[prop] = attrs[idx][prop];}
-        } else if (idx === 'html') {
-            this.innerHTML = attrs[idx];
-        } else {
-            this.setAttribute(idx, attrs[idx]);
-        }
-    }
-};
 
-NodeList.prototype.forEach = Array.prototype.forEach;
-// 
-
-var replaceJQ = (function(){
-	
-	function ready(fn) {
-		if (document.readyState != 'loading'){
-			fn();
-		} else {
-			document.addEventListener('DOMContentLoaded', fn);
+(function(){
+	'use strict';
+	var Viewport = (function() {
+		var vp;
+		
+		function addViewport () {
+			vp         = document.createElement('meta');
+			vp.name    = "viewport";
+			vp.id      = "customViewportAppNext";
+			vp.content = "width=device-width, initial-scale=1";
+			document.getElementsByTagName('head')[0].appendChild(vp);
 		}
-	}
 
-	function each (item, fn) {
-		if(Object.prototype.toString.call(item) === '[object Object]') {
-			for(var key in item) {
-				if (item.hasOwnProperty(key)) {
-					fn(key, item[key]);
+		function removeViewport () {
+			vp.parentNode.removeChild(vp);
+		}
+
+		return {
+			add:    addViewport,
+			remove: removeViewport,
+		}
+	}());
+
+	var App = (function(Viewport){
+	  var q, app;
+
+		var parseURL = function() {
+			var query = {};
+			var scriptTag = qs('#appScript');
+
+			return query = {
+				id:                scriptTag.getAttribute('data-id') || "",
+				cnt:               scriptTag.getAttribute('data-count') || "20",
+				cat:               scriptTag.getAttribute('data-category') || "",
+				pbk:               scriptTag.getAttribute('data-postback') || "",
+				bcolor:            scriptTag.getAttribute('data-buttonColor') || "",
+				btext:             scriptTag.getAttribute('data-buttonText') || "Download",
+				skipText:          scriptTag.getAttribute('data-skipText') || "Skip",
+			}		
+		};
+
+		 var createIframe = function () {
+			var iframe = document.createElement('iframe');
+			
+			iframe.src = 'iframe.html';
+			iframe.id  = "appIframe";
+			iframe.setAttributes({
+				styles: {
+					position:    'fixed',
+					top:         "0",
+					right:       "0",
+					bottom:      "0",
+					left:        "0",
+					borderStyle: 'none',
+					width:       '100%',
+					height:      '100%',
 				}
-			}
-		} else if (Array.isArray(item)) {
-				item.forEach(function(val, key){
-					fn(key, val);
-				});
+			});
+			document.body.appendChild(iframe);
+			return iframe;
 		}
-	}
 
-	return {
-		ready: ready,
-		each:  each
-	}
+		var loadJSONP = function (url, callback, context) {
+			var unique = 0;
+			var name = "_jsonp_" + unique++;
 
-}());
+			if (url.match(/\?/)) url += "&callback="+name;
+			else url += "?callback="+name;
 
-// 
+			// Create script
+			var script  = document.createElement('script');
+			script.type = 'text/javascript';
+			script.src  = url;
 
-var appnextAPP = (function(){
-	
-	var finalApps        = [],
-			images           = [],
-			CallbackRegistry = {},
-			pkgNames         = [];
-
-			var id = getURLParameter('android_id');
-			if (id === undefined || id === '' || id === null) id = false;
-
-			var bgc = getURLParameter('bgc');
-			if (bgc === undefined || bgc === '' || bgc === null) bgc = 'fff';
-
-			var bcolor = getURLParameter('bcolor');
-			if (bcolor === undefined || bcolor === '' || bcolor === null) bcolor = '';
-
-			var btitle = getURLParameter('btitle');
-			if (btitle === undefined || btitle === '' || btitle === null) btitle = 'Download Free!';
-			if (btitle) {
-				btitle = btitle.substring(0, 20);
+			// Setup handler
+			window[name] = function(data){
+				callback.call((context || window), data);
+				document.getElementsByTagName('head')[0].removeChild(script);
+				script = null;
+				delete window[name];
 			};
 
-			var cat = getURLParameter('cat');
-			if (cat === undefined || cat === '' || cat === null) cat = '';
-
-			var cnt = getURLParameter('cnt');
-			if (cnt === undefined || cnt === '' || cnt === null) cnt = '1';
-
-			var pbk = getURLParameter('pbk');
-			if (pbk === undefined || pbk === '' || pbk === null) pbk = '';
-
-			var device = getURLParameter('device');
-			if (device === undefined || device === '' || device === null) device = '';
-
-			var d = getURLParameter('d');
-			if (d === undefined || d === '' || d === null) d = '';
-
-			var vid = getURLParameter('vid');
-			if (vid === undefined || vid === '' || vid === null) vid = '';
-
-			var appn = getURLParameter('appn');
-			if (appn === undefined || appn === '' || appn === null){
-				appn = '';
-			}else{
-				appn = 'Welcome to '+appn.substring(0,15)+'<br> & Discover this Free App!';
-			}
-			var title = getURLParameter('title');
-			if (title === undefined || title === '' || title === null) {
-				title = 'Discover this Free App!';
-			} else {
-				title = title.substring(0,50);
-			}
-
-			if (appn!='')
-			{
-				title=appn;
-			}
-
-
-	function scriptRequest(url, onSuccess, onError) {
-	 
-		var scriptOk = false;
-		var callbackName = 'f'+String(Math.random()).slice(2);
-
-		url += ~url.indexOf('?') ? '&' : '?';
-		url += 'callback=CallbackRegistry.'+callbackName;
-		CallbackRegistry[callbackName] = function(data) {      
-			scriptOk = true;
-			delete CallbackRegistry[callbackName];
-			onSuccess(data);
-		};
-		window.CallbackRegistry = CallbackRegistry;
-
-		function checkCallback() {
-			if (scriptOk) return;
-			delete CallbackRegistry[callbackName];
-			onError(url);
+			// Load JSON
+			document.getElementsByTagName('head')[0].appendChild(script);
 		}
-	 
-		var script = document.createElement('script'); 
-	 
-		script.onreadystatechange = function() {   
-			if (this.readyState == 'complete' || this.readyState == 'loaded'){  
-				this.onreadystatechange = null;  
-				setTimeout(checkCallback, 0);
-			}
-		}
-	 
-		script.onload = script.onerror = checkCallback;
-		script.src = url;
-	 
-		document.body.appendChild(script);
-	 }
 
-	function success_jsonp(data) {
-			replaceJQ.each(data, function(key, val) {
-					var dataAttr = data[key];
-					replaceJQ.each(dataAttr, function(key, val) {
-						pkgNames.push(val.androidPackage);	
-					});
-					window.location = 'appnext://pid:' + pkgNames;
-					window.finalApps = dataAttr;
+		function success_jsonp (data) {
+			Viewport.add();
+			var iframe = createIframe();
+			iframe.onload = function() {
+				renderApp(data.apps, iframe.contentWindow.document)
+			};
+		}
+
+
+		var renderApp = function(apps, iframeDocument) {
+			var swiperContainer = qs('.swiper-container', iframeDocument);
+			var mySwiper = new Swiper (swiperContainer, {
+				loop:           true,
+				slidesPerView:  1,
+				centeredSlides: true,
+				slidesPerView:  'auto',
+				loopedSlides:   2
 			});
+		};
 
-			installedApps(); // remove in prodaction.
-	}
 
-	function fail_jsonp(url) {
-		console.log('Error in query ' + url);
-	}
-
-	function getURLParameter(name) {
-			return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search) || [, ""])[1].replace(/\+/g, '%20')) || null
-	}
-
-	function installedApps(apps) {
-		var indexes = [];
-		if (apps) {
-				replaceJQ.each(window.finalApps, function (i, val) {
-				if (apps.split(',').indexOf(val.androidPackage) != -1) {
-							indexes.push(i);
-					}
-				});
-				for (var i = indexes.length - 1; i >= 0; i--) {
-					window.finalApps.splice(indexes[i], 1);
-				}
-			}
-			window.finalApps.slice(0,1).forEach(function (val1, key1) {
-			if (val1){
-				document.querySelectorAll('.js-modal_title').forEach(function(element, index){
-						element.setAttributes({
-							html: title
-						});
-				});
-				for (var i = 0, jsAppUrl = document.querySelectorAll('.js_app_url'), l = jsAppUrl.length; i < l; i++) {
-					jsAppUrl[i].setAttributes({
-						'data-jsonid': key1
-					});
-				};
-				document.querySelectorAll('.js-modal_main_img_itm').forEach(function(element, index){
-					element.setAttributes({
-						src:    val1.urlImg,
-						onload: document.querySelector('.js-modal_inner_cust').style.display = "",
-						alt:    val1.title
-					});
-				});
-
-				document.querySelector('.js-modal_itm_info_title').setAttributes({
-					html: val1.title.substring(0, 25)
-				});
-
-				document.querySelector('.js-modal_itm_info_text').setAttributes({
-					html: val1.desc.substring(0, 90)
-				});
-				document.querySelector('.js-modal_itm_info_btn').setAttributes({
-					html: btitle,
-					styles: {
-						background: '#'+bcolor
-					}
-				});
-
-				var jsAppUrl = document.querySelectorAll('.js_app_url');
-				for (var i = 0, l = jsAppUrl.length; i < l; i++) {
-						jsAppUrl[i].addEventListener('click', function(e) {
-								e.preventDefault();
-								var keyApp = this.getAttribute('data-jsonid');
-								window.location = 'appnext://app:' + JSON.stringify(window.finalApps[keyApp]);		
-					});
-				};
-			}
-		});
-		
-		get_ready();
-	};
-
-	function get_ready (argument) {
-		var app = window.finalApps[0],
-				url = app.pixelImp;
-
-		if (app.pixelImp) {
-			return window.location = 'appnext://ready:'+JSON.stringify({pixelImp:url});
+		function init() {
+			q = parseURL();
+			if (!q.id) {
+				return
+			};
+			loadJSONP("https://admin.appnext.com/offerWallApi.aspx?&vs=1&id="+q.id+"&cnt="+q.cnt+"&cat="+q.cat, success_jsonp);
 		}
 
-		return window.location = 'appnext://ready';
-	}
+		return {init:init}
 
-	function init() {
-		if (!id) {
-			return
-		};
-		scriptRequest("https://admin.appnext.com/offerWallApi.aspx?pimp=1&ext=t&id="+id+"&cnt="+cnt+"&cat="+cat+"&device="+device+"&d="+d+"&vid="+vid+"&pbk="+pbk, success_jsonp, fail_jsonp);
-		var innerCust  = document.querySelectorAll('.js-modal_inner_cust')[0],
-				skipButton = document.querySelectorAll('.js-modal_itm_info_foot_btn');
-		innerCust.style.backgroundColor = "#"+bgc;
-		skipButton.forEach(function(val, key) {
-			val.addEventListener('click', function(e) {
-				e.preventDefault();
-				window.location = 'appnext://close_appwall';
-			});
-		})
-
-		window.installedApps = installedApps;
-		window.dd = 'installedApps';
-	}
-
-	return {
-		init: init
-	}
-
-}());
-
-replaceJQ.ready(function() {
-	appnextAPP.init();
-});
+	}( Viewport || {} ));
+	window.App = App;
+})();
+App.init();
