@@ -93,16 +93,20 @@
 			};
 		}
 
-
 		var renderApp = function(apps, iframeDocument) {
 			var swiperContainer = qs('.swiper-container', iframeDocument);
-			var mySwiper = new Swiper (swiperContainer, {
-				loop:           true,
-				slidesPerView:  1,
-				centeredSlides: true,
-				slidesPerView:  'auto',
-				loopedSlides:   2
-			});
+			if(iframeDocument.documentElement.clientWidth > iframeDocument.documentElement.clientHeight){
+					// landscape
+			} else {
+				// portrait
+				var mySwiper = new Swiper (swiperContainer, {
+					loop:           true,
+					slidesPerView:  1,
+					centeredSlides: true,
+					slidesPerView:  'auto',
+					loopedSlides:   2
+				});
+			}
 		};
 
 
