@@ -28,15 +28,14 @@
 		var parseURL = function() {
 			var query = {};
 			var scriptTag = qs('#appScript');
-
 			return query = {
 				id:                scriptTag.getAttribute('data-id') || "",
-				cnt:               scriptTag.getAttribute('data-count') || "20",
+				cnt:               scriptTag.getAttribute('data-count') || "5",
 				cat:               scriptTag.getAttribute('data-category') || "",
 				pbk:               scriptTag.getAttribute('data-postback') || "",
 				bcolor:            scriptTag.getAttribute('data-buttonColor') || "",
-				btext:             scriptTag.getAttribute('data-buttonText') || "Download",
-				skipText:          scriptTag.getAttribute('data-skipText') || "Skip",
+				btext:             scriptTag.getAttribute('data-buttonText') || "Install Free!",
+				skipText:          scriptTag.getAttribute('data-skipText') || "skip",
 			}		
 		};
 
@@ -95,18 +94,60 @@
 
 		var renderApp = function(apps, iframeDocument) {
 			var swiperContainer = qs('.swiper-container', iframeDocument);
-			if(iframeDocument.documentElement.clientWidth > iframeDocument.documentElement.clientHeight){
-					// landscape
-			} else {
-				// portrait
-				var mySwiper = new Swiper (swiperContainer, {
-					loop:           true,
-					slidesPerView:  1,
-					centeredSlides: true,
-					slidesPerView:  'auto',
-					loopedSlides:   2
+			
+			var prepareSlides = function() {
+				var swiperSlideTemplate   = qs('.swiper-slide', iframeDocument).parentNode.removeChild(qs('.swiper-slide', iframeDocument));
+				var swiperWrapper = qs('.swiper-wrapper', iframeDocument);
+				var slides = document.createDocumentFragment();
+				apps.forEach(function(element, index){
+					var slide = swiperSlideTemplate.cloneNode(true);
+					qs('.js-modal_main_img_itm', slide).src            = element.urlImg;
+					qs('.js-modal_itm_info_title', slide).innerHTML    = element.title;
+					qs('.js-modal_itm_info_text', slide).innerHTML     = element.desc;
+					qs('.js-modal_itm_info_btn', slide).innerHTML      = q.btext;					
+					slides.appendChild(slide);
 				});
-			}
+				
+				swiperWrapper.appendChild(slides);
+			};
+			
+			var initSwiper = function(swiperContainer, appsCount) {
+				var mySwiper;
+				window.addEventListener("resize", function() {
+					if(window.innerWidth > window.innerHeight){
+							// landscape
+							if (mySwiper) {
+								mySwiper.destroy(true, true);
+							};
+							mySwiper = new Swiper (swiperContainer, {
+								loop:           true,
+								centeredSlides: true,
+								slidesPerView:  'auto',
+								direction:      'vertical',
+								loopedSlides:   Math.round(appsCount/2)
+							});
+							mySwiper.update();
+					} else {
+						// portrait
+						if (mySwiper) {
+							mySwiper.destroy(true, true);
+						};
+						mySwiper = new Swiper (swiperContainer, {
+							loop:           true,
+							centeredSlides: true,
+							direction:      'horizontal',
+							slidesPerView:  'auto',
+							loopedSlides:   Math.round(appsCount/2)
+						});
+						mySwiper.update();
+					}
+				}, false);
+				window.dispatchEvent(new Event('resize'));			
+			};
+
+			qs('.js-modal_itm_info_foot_btn', iframeDocument).innerHTML = q.skipText;
+			prepareSlides();
+			initSwiper(swiperContainer, apps.length);
 		};
 
 

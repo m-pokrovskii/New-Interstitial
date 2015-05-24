@@ -123,6 +123,10 @@ window.fireEvent = function (node, eventName) {
     }
 };
 
+	window.toType = function(obj) {
+	  return ({}).toString.call(obj).match(/\s([a-zA-Z]+)/)[1].toLowerCase()
+	}
+
 	window.each = function (item, fn) {
 		if(Object.prototype.toString.call(item) === '[object Object]') {
 			for(var key in item) {
@@ -140,7 +144,7 @@ window.fireEvent = function (node, eventName) {
 
 	// Allow for looping on nodes by chaining:
 	// qsa('.foo').forEach(function () {})
-	NodeList.prototype.forEach = Array.prototype.forEach;
+	NodeList.prototype.forEach       = Array.prototype.forEach;
 
 	Element.prototype.setAttributes = function (attrs) {
 			for (var idx in attrs) {
