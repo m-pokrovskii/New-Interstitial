@@ -74,8 +74,7 @@ body, .app {
 	width 100%
 	height 100%
 	+above("s", orientation: landscape) {
-		height auto
-		va()		
+		height 100%
 		}
 	}
 .apps {
@@ -96,7 +95,7 @@ body, .app {
 	height 100%
 	+above("s", orientation: landscape)
 		display table
-		padding: 0;
+		padding: 2% 0;
 		width: 100%;
 		height 100%
 
@@ -111,28 +110,33 @@ body, .app {
 	.only-landscape
 		display block
 
-.app__content-wrapper
+.app__content-wrapper {
 	height 100% 
+	+above("s", orientation: landscape) {
+		height: auto;
+		}
+}
+	
 
 .app__top
 	position relative
-	height 62%
+	height 50%
 	+above("s", orientation: landscape)
 		display table-cell
 		width 50%
 		height 100%
-		padding 3.5% 0 3% 0 
+		padding 0 
+		vertical-align: middle;
 
 .app__bottom
 	position relative
-	height 33%
-	padding 1em
+	height 50%
 	+above("s", orientation: landscape)
 		display table-cell
 		width 50%
 		height 100%
-		vertical-align bottom
-		padding 3.5% 2% 3% 2%
+		vertical-align middle
+		padding 0 2% 0 2%
 
 .app__footer {
 	position: absolute; bottom: 0; left: 50%; margin-left: -42%;
@@ -150,8 +154,9 @@ body, .app {
 	word-break break-word
 	+above("s", orientation: landscape)
 		position relative
-		padding 0 1em 
-		height 17%
+		font-size 1.5em;
+		height auto
+		text-align: left;
 	
 .app__headline__text
 	display block
@@ -161,26 +166,28 @@ body, .app {
 
 .app__desc
 	height 100%
+	padding: 0 7%;
 	+above("s", orientation: landscape)
-		height 78%
+		height auto
+		padding: 0;
 
 .app__image-container
 	position relative
 	text-align center
 	margin 0 auto
-	height auto
-	va();
+	height 100%
 	+above("s", orientation: landscape)
 		padding 0 
 		width 100% 
-		height 100%
-		reset_va();
+		height auto
 		margin 0 auto
 	img
+		position: absolute; bottom: 0; left: 0;
 		width 100%
 		height auto
 		display inline-block
 		+above("s", orientation: landscape)
+			position: static;
 			display block
 			width 90%
 			margin 0 auto 
@@ -188,14 +195,15 @@ body, .app {
 
 .app__app-desc__table
 	width 100%
-	height auto
-	margin-top -0.5em 
+	height 85%
+	margin-top: 5%;
+	margin-bottom: 10%;
 	border-spacing 0
 	border-collapse collapse	
 	font-size 1em 
 	td
 		padding 0.5em 0
-		vertical-align top
+		vertical-align middle
 	+above("s", orientation: landscape)
 		position relative
 		top 0.5em
@@ -210,25 +218,34 @@ body, .app {
 	margin-bottom 0.5em;
 	+above("s", orientation: landscape)
 		font-size 2em 
+		text-align: left;
 
 
 .app__app-desc__desc
 	font-size 1.3em
 	text-align center
+	+above("s", orientation: landscape) {
+		text-align: left;	
+		}
+	
 			
 .app__button-container
 	text-align center
+	+above("s", orientation: landscape) {
+		text-align left
+		}
 
 .app__btn
 	background: linear-gradient(to bottom,  #f99b1d 0%, #f47320 100%);
 	display inline-block
-	font-size 1.6em
+	font-size 1.7em
 	font-weight bold 
 	text-decoration none
 	color #fff
 	padding 1em 1.5em
 	min-width: 90%;
 	word-break break-word
+	text-align: center;
 	+above("s", orientation: landscape)
 		font-size 1.5em
 		white-space nowrap
@@ -242,13 +259,13 @@ body, .app {
 		width 100%
 	
 .app__skip
-	position: absolute; right: 0; top: 2px;
+	position: absolute; right: 0; top: 0;
 	
 .app__skip-link
 	display block
 	color #a7a7a7
 	text-decoration none
-	font-size 1.1em 
+	font-size 1.2em 
 	line-height 1 !important 
 	padding 0.3em
 	margin-top -0.3em 
@@ -266,6 +283,52 @@ body, .app {
 	height: 100%;
 	@media (min-width: 400px) and (orientation: landscape) {
 		width: 100% !important;
-		height: 100%;
+		height: auto !important;
 		}
 	}
+	
+
+// rating
+
+.rating {
+	width: 100%;
+	color: #FFF;
+	text-align: right;
+	vertical-align: middle;
+	overflow: hidden;
+	text-align: left;
+	@media (orientation: landscape) {
+		display: none;
+		}
+	}
+	
+	.rating__stars {
+		position: relative; top: 2px;
+		width: 40%;
+		display: inline-block;
+		text-align: left;
+		img {
+			display: block;
+			width: 100%;
+			}
+		}
+		
+	.stars {
+		position: relative;
+		width: 100%;
+		overflow: hidden;
+		.stars__hover {
+			position: absolute;
+			width: 100%;
+			top: 0; left: 0;
+			overflow: hidden;
+			}
+		}
+
+	.rating__downloads {
+		display: inline-block;
+		width: 58%;
+		text-align: right;
+		font-size: 1.2em;
+		color: #525252;
+		}
