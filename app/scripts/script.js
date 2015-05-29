@@ -23,7 +23,7 @@
 	}());
 
 	var App = (function(Viewport){
-	  var q, app;
+	  var q, app, iframe;
 
 		var parseURL = function() {
 			var query = {};
@@ -36,12 +36,13 @@
 				bcolor:            scriptTag.getAttribute('data-buttonColor') || "",
 				btext:             scriptTag.getAttribute('data-buttonText') || "Install Free!",
 				skipText:          scriptTag.getAttribute('data-skipText') || "skip",
+				mainTitle:         scriptTag.getAttribute('data-mainTitle') || "Recommended for you",
 			}		
 		};
 
-		 var createIframe = function () {
-			var iframe = document.createElement('iframe');
-			
+		var createIframe = function () {
+			iframe = document.createElement('iframe');
+
 			iframe.src = 'iframe.html';
 			iframe.id  = "appIframe";
 			iframe.setAttributes({
@@ -56,6 +57,7 @@
 					height:      '100%',
 				}
 			});
+
 			document.body.appendChild(iframe);
 			return iframe;
 		}
@@ -101,13 +103,15 @@
 				var slides = document.createDocumentFragment();
 
 				qs('.js-modal_itm_info_foot_btn', iframeDocument).innerHTML = q.skipText;
-				
+				qs('.js-modal_itm_info_foot_btn', iframeDocument).addEventListener('click', removeApp);
+
 				apps.forEach(function(element, index){
-					var slide = swiperSlideTemplate.cloneNode(true);
-					qs('.js-modal_main_img_itm', slide).src            = element.urlImg;
-					qs('.js-modal_itm_info_title', slide).innerHTML    = element.title;
-					qs('.js-modal_itm_info_text', slide).innerHTML     = element.desc;
-					qs('.js-modal_itm_info_btn', slide).innerHTML      = q.btext;					
+					var slide                                       = swiperSlideTemplate.cloneNode(true);
+					qs('.js-modal_main_img_itm', slide).src         = element.urlImg;
+					qs('.js-modal_itm_info_title', slide).innerHTML = element.title;
+					qs('.js-modal_itm_info_text', slide).innerHTML  = element.desc;
+					qs('.js-modal_itm_info_btn', slide).innerHTML   = q.btext;
+					qs('.js-modal_title', slide).innerHTML         = q.mainTitle;
 					slides.appendChild(slide);
 				});				
 				swiperWrapper.appendChild(slides);
@@ -153,8 +157,16 @@
 
 			AllImagesLoaded.init( qsa('.js-modal_main_img_itm', iframeDocument), function() {
 			  initSwiper(swiperContainer, apps.length);
+			  // var appImageContainers = qsa('.app__image-container', iframeDocument);
+			  // var appImages = qsa('.app__image-container img', iframeDocument);
+			  // [].forEach.call(appImageContainers, function(el, index) {
+			  // 	var container = el;
+			  // 	var img       = appImages[index];
+			  // 	if (img.getBoundingClientRect().height > container.getBoundingClientRect().height) {
+			  // 		img.style.width = '100%';
+			  // 	};
+			  // });
 			});
-
 		};
 
 		var AllImagesLoaded = (function(){
@@ -227,9 +239,14 @@
 			}
 		}());
 
+		var removeApp = function() {
+			iframe.parentNode.removeChild(iframe);
+			Viewport.remove();
+		};
 		
 		function init() {
 			q = parseURL();
+			app = qs()
 			if (!q.id) {
 				return
 			};
