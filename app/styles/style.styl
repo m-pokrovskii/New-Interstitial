@@ -131,6 +131,9 @@ body, .app {
 .app__bottom
 	position relative
 	height 50%
+	@media (max-height: 500px) and (orientation: portrait) {
+		height 45%
+		}
 	+above("s", orientation: landscape)
 		display table-cell
 		width 50%
@@ -353,6 +356,7 @@ body, .app {
 		}
 	.rating__downloads {
 		display: block;
+		width: auto;
 		text-align: left;
 		}
 	}

@@ -108,10 +108,15 @@
 				apps.forEach(function(element, index){
 					var slide                                       = swiperSlideTemplate.cloneNode(true);
 					qs('.js-modal_main_img_itm', slide).src         = element.urlImg;
-					qs('.js-modal_itm_info_title', slide).innerHTML = element.title;
+					qs('.js-modal_itm_info_title', slide).innerHTML = element.title.substring(0,15);
 					qs('.js-modal_itm_info_text', slide).innerHTML  = element.desc;
 					qs('.js-modal_itm_info_btn', slide).innerHTML   = q.btext;
-					qs('.js-modal_title', slide).innerHTML         = q.mainTitle;
+					qs('.js-modal_title', slide).innerHTML          = q.mainTitle;
+					[].forEach.call(qsa('.js_app_url', slide), function(node){
+						node.addEventListener('click', function() {
+							window.location = element.urlApp;
+						})
+					});
 					slides.appendChild(slide);
 				});				
 				swiperWrapper.appendChild(slides);
@@ -152,21 +157,11 @@
 			};
 			
 			prepareSlides();
-
-			Rating.init(iframeDocument);
-
-			AllImagesLoaded.init( qsa('.js-modal_main_img_itm', iframeDocument), function() {
+			AllImagesLoaded.init( qsa('.app img', iframeDocument), function() {
+				Rating.init(iframeDocument);
 			  initSwiper(swiperContainer, apps.length);
-			  // var appImageContainers = qsa('.app__image-container', iframeDocument);
-			  // var appImages = qsa('.app__image-container img', iframeDocument);
-			  // [].forEach.call(appImageContainers, function(el, index) {
-			  // 	var container = el;
-			  // 	var img       = appImages[index];
-			  // 	if (img.getBoundingClientRect().height > container.getBoundingClientRect().height) {
-			  // 		img.style.width = '100%';
-			  // 	};
-			  // });
 			});
+
 		};
 
 		var AllImagesLoaded = (function(){
@@ -207,7 +202,6 @@
 				starsHoverImage       = qsa('.stars__hover img', iframeDocument),
 				defaultStarsImage     = qsa('.stars__default img', iframeDocument),
 				downloadNumbers = qsa('.rating-download-numbers', iframeDocument);				
-					
 				starRating(starsHover, starsHoverImage, defaultStarsImage);
 				[].forEach.call(downloadNumbers, function(el, index) {
 					el.innerHTML = randomNumber(10000, 2000000).toLocaleString();					
@@ -216,6 +210,16 @@
 				window.addEventListener('resize', function(event){
 					starRating(starsHover, starsHoverImage, defaultStarsImage);
 				});
+
+					
+				// starRating(starsHover, starsHoverImage, defaultStarsImage);
+				// [].forEach.call(downloadNumbers, function(el, index) {
+				// 	el.innerHTML = randomNumber(10000, 2000000).toLocaleString();					
+				// });
+
+				// window.addEventListener('resize', function(event){
+				// 	starRating(starsHover, starsHoverImage, defaultStarsImage);
+				// });
 			};
 
 			var randomNumber = function(min, max) {
