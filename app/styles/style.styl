@@ -313,11 +313,7 @@ body, .app {
 	vertical-align: middle;
 	overflow: hidden;
 	text-align: left;
-	@media (orientation: landscape) {
-		display: none;
-		}
-	}
-	
+}	
 	.rating__stars {
 		position: relative; top: 2px;
 		width: 40%;
@@ -348,3 +344,15 @@ body, .app {
 		font-size: 1.2em;
 		color: #525252;
 		}
+		
+.rating.only-landscape {
+	.rating__stars {
+		display: block;
+		width: 35%;
+		margin-bottom: 1em;
+		}
+	.rating__downloads {
+		display: block;
+		text-align: left;
+		}
+	}
