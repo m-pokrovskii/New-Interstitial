@@ -158,6 +158,7 @@
 			
 			prepareSlides();
 			AllImagesLoaded.init( qsa('.app img', iframeDocument), function() {
+				iframeDocument.querySelector('.app').style.display = "block";
 				Rating.init(iframeDocument);
 			  initSwiper(swiperContainer, apps.length);
 			});
@@ -250,7 +251,6 @@
 		
 		function init() {
 			q = parseURL();
-			app = qs()
 			if (!q.id) {
 				return
 			};

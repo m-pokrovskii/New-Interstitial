@@ -64,6 +64,9 @@ body, .app {
 	background: #FFF;	
 	}
 
+.app {
+	display: none;
+	}
 		
 .app * 
 	box-sizing border-box
@@ -191,11 +194,12 @@ body, .app {
 		width 100%
 		height auto
 		display inline-block
-		@media (max-height: 500px) and (orientation: portrait) {
+		@media (max-height: 550px) and (orientation: portrait) {
 			position: static;
 			padding: 0.5em;
 			width: auto;
 			height: 100%;
+			border: solid 1px red; 
 			}
 		+above("s", orientation: landscape) {
 			position: static;
