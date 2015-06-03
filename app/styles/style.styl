@@ -363,3 +363,82 @@ body, .app {
 		text-align: left;
 		}
 	}
+	
+// arrows
+
+.arrows {
+	}
+
+.arrows__prev,
+.arrows__next {
+	position: absolute; top: 54.5%;
+	width: 4%;
+	z-index: 101;
+	img {
+		width: 100%;
+		display: block;
+		}
+	@media (orientation: landscape) {
+		top: auto;
+		width: 2%;
+		}
+	}
+
+	
+.arrows__prev {
+	left: 5%;
+	@media (orientation: landscape) {
+		left: 70%;
+		top: 2%;
+		transform: rotate(90deg);
+		}
+	}
+	
+.arrows__next {
+	transform: rotate(180deg);
+	right: 5%;
+	@media (orientation: landscape) {
+		right: auto; 
+		left: 70%;
+		bottom: 2%;
+		transform: rotate(-90deg);
+		}
+	}
+	
+@media (orientation: landscape) and (min-height: 430px) {
+	.arrows__prev {
+			top: 8%;
+			width: 3%;
+		}
+
+	.arrows__next {	
+			bottom: 8%;
+			width: 3%;
+		}	
+}
+
+
+@media (orientation: landscape) and (min-height: 520px) {
+	.arrows__prev {
+			top: 5%;
+			width: 3%;
+		}
+
+	.arrows__next {	
+			bottom: 5%;
+			width: 3%;
+		}	
+}
+
+@media (orientation: landscape) and (min-height: 768px)  and (max-width: 1024px){ 
+	// Ipad
+	.arrows__prev {
+			top: 10%;
+			width: 3%;
+		}
+
+	.arrows__next {	
+			bottom: 10%;
+			width: 3%;
+		}	
+}

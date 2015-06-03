@@ -1,4 +1,3 @@
-
 (function(){
 	'use strict';
 	var Viewport = (function() {
@@ -153,9 +152,19 @@
 						mySwiper.update();
 					}
 				}, false);
-				window.dispatchEvent(new Event('resize'));			
+				window.dispatchEvent(new Event('resize'));
+				iframeDocument.querySelector('.arrows__prev')
+					.addEventListener('click', function() {
+						mySwiper.slidePrev();
+					});
+
+				iframeDocument.querySelector('.arrows__next')
+					.addEventListener('click', function() {
+						mySwiper.slideNext();
+					});
 			};
-			
+
+
 			prepareSlides();
 			AllImagesLoaded.init( qsa('.app img', iframeDocument), function() {
 				iframeDocument.querySelector('.app').style.display = "block";
